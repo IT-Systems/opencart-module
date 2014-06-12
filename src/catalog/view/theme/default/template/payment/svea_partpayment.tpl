@@ -37,7 +37,21 @@
         if( $countryCode == "SE" || $countryCode == "DK" || $countryCode == "NO" || $countryCode == "FI")
         { ?>
             <?php echo $this->language->get('text_ssn') ?>:
-            <input type="text" id="ssn" name="ssn" /><br /><br />
+            <input type="text" id="ssn" name="ssn"<?php // Tupas-api mod
+            if ($tupas_ssn) echo ' value="' . $tupas_ssn . '"';
+            if ($useTupas) echo ' readonly="readonly"'; 
+            /* .. ends */ ?>/>
+            <?php // Tupas-api mod
+            if (!$this->session->data['tupas_pp_ssn'] && $tupasParams) {
+                printf('<button type="button" id="getTupasAuthenticationPP">%s</button>', $tupas_button_text);
+                printf('<form method="POST" action="%s" id="tapi_formpp">', $tupas_api_url);
+                foreach ($tupasParams as $key => $val) :
+                    printf('<input type="hidden" name="%s" value="%s" id="%s_pp-tapi">', $key, $val, $key);
+                endforeach;
+                echo '</form>';
+            } // .. ends
+            ?>
+            <br /><br />
         <?php
         }
         elseif( $countryCode == "NL" || $countryCode == "DE" )
@@ -129,6 +143,10 @@ if( $countryCode == "SE" || $countryCode == "DK" )
 var sveaLoading = '<img src="catalog/view/theme/default/image/loading.gif" id="sveaLoading" />';
 var runningCheckout = false;
 //$("a#checkout").hide();
+$("#getTupasAuthenticationPP").click(function(){
+    $("#tapi_formpp").submit();
+});
+
 $('#svea_partpayment_tr').hide();
 
 $('a#checkout').click(function(event) {

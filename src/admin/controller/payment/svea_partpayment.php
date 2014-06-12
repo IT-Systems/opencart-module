@@ -13,6 +13,10 @@ class ControllerPaymentsveapartpayment extends Controller {
 
                     $this->model_setting_setting->editSetting('svea_partpayment', $this->request->post);
                       //load latest PaymentPlan params from Svea api on save
+                    // Tupas API mod ... [BEGINS] //
+                    if ($this->tupasSettingsChanged())
+                        $this->editShopInstance();
+                    // ... [ENDS]      
                     $this->loadPaymentPlanParams();
 
                     $this->session->data['success'] = $this->language->get('text_success');
@@ -53,7 +57,13 @@ class ControllerPaymentsveapartpayment extends Controller {
                 $this->data['entry_yes']           = $this->language->get('entry_yes');
                 $this->data['entry_no']            = $this->language->get('entry_no');
                 $this->data['entry_min_amount']    = $this->language->get('entry_min_amount');
-
+                // Tupas API mod... [BEGINS] 
+                $this->data['entry_use_tupas']      = $this->language->get('entry_use_tupas');
+                $this->data['entry_tupas_mode']     = $this->language->get('entry_tupas_mode');
+                $this->data['entry_tupas_shop_token']   = $this->language->get('entry_tupas_shop_token');        
+                $this->data['entry_tupas_test']   = $this->language->get('entry_tupas_test');   
+                $this->data['entry_tupas_production']   = $this->language->get('entry_tupas_production');   
+                // ... [ENDS]
                 $this->data['version']             = floatval(VERSION);
 
                 //As you might notice the word we're really looking for is "country" not "lang". Leaving it like that so it won't ruin anything though.
@@ -150,7 +160,27 @@ class ControllerPaymentsveapartpayment extends Controller {
 		} else {
 			$this->data['svea_partpayment_product_price'] = $this->config->get('svea_partpayment_product_price');
 		}
-
+        
+        // Tupas mod... //
+        if (isset($this->request->post['svea_partpay_use_tupas'])) {
+	       $this->data['svea_partpay_use_tupas'] = $this->request->post['svea_partpay_use_tupas'];
+		} else {
+			$this->data['svea_partpay_use_tupas'] = $this->config->get('svea_partpay_use_tupas');
+		}
+        
+        if (isset($this->request->post['svea_partpay_tupas_mode'])) {
+	       $this->data['svea_partpay_tupas_mode'] = $this->request->post['svea_partpay_tupas_mode'];
+		} else {
+			$this->data['svea_partpay_tupas_mode'] = $this->config->get('svea_partpay_tupas_mode');
+		}
+        
+        if (isset($this->request->post['svea_invoice_tupas_shop_token'])) {
+	       $this->data['svea_partpay_tupas_shop_token'] = $this->request->post['svea_partpay_tupas_shop_token'];
+		} else {
+			$this->data['svea_partpay_tupas_shop_token'] = $this->config->get('svea_partpay_tupas_shop_token');
+		}
+        // .. ends
+        
 		$this->template = 'payment/svea_partpayment.tpl';
 		$this->children = array(
 			'common/header',
@@ -233,6 +263,7 @@ class ControllerPaymentsveapartpayment extends Controller {
             )   ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1
             ';
         $this->db->query($q);
+        $this->installTupas();
     }
 
       protected function sveaFormatParams($response){
@@ -313,5 +344,29 @@ class ControllerPaymentsveapartpayment extends Controller {
 
 
     }
+    
+    /* Tupas API -modification */
+    public function installTupas() {
+		$this->load->model('payment/svea_partpayment');
+		$this->load->model('setting/setting');
+		$this->model_payment_svea_partpayment->install();
+    }
+    
+    public function uninstall() {
+		$this->load->model('payment/svea_partpayment');
+		$this->load->model('setting/setting');
+		$this->model_payment_svea_partpayment->uninstall();
+    }
+    
+    public function tupasSettingsChanged() {
+        $this->load->model('payment/svea_partpayment');   
+        return $this->model_payment_svea_partpayment->tupasSettingsChanged(); 
+    }
+    
+    public function editShopInstance() {
+		$this->load->model('payment/svea_partpayment');   
+        $this->model_payment_svea_partpayment->editShopInstance();     
+    }
+    
 }
 ?>

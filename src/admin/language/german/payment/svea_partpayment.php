@@ -33,4 +33,11 @@ $_['entry_product'] = 'Product Price Widget:';
 
 // Error
 $_['error_permission']        = 'Achtung: Sie sind nicht genehmigt in Svea Teilzahlung Zahlungsmodul zu ändern!';
+
+// Tupas API mod
+$_['entry_use_tupas']         = 'Use Tupas authentication:';
+$_['entry_tupas_mode']        = 'Tupas mode:';
+$_['entry_tupas_shop_token']  = 'Tupas API Shop token:';
+$_['entry_tupas_test']        = 'test';
+$_['entry_tupas_production']  = 'production';
 ?>

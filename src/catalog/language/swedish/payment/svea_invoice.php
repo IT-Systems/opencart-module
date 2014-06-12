@@ -40,4 +40,9 @@ $_['response_error'] = "Fel: ";
 //Order definitions
 $_['text_svea_fee']   = 'SVEA Fakturaavgift';
 $_['unit']            = 'st';
+
+// Tupas API
+$_['button_tupas']    = 'Authenticate on online bank';
+$_['tupas_error']     = 'Tampered parameters!!!';
+$_['response_60000'] = "You have to authenticate yourself first (using the button above)!";
 ?>

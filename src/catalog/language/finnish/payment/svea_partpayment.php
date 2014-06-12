@@ -45,4 +45,9 @@ $_['response_error'] = "Virhe: ";
 $_['unit']           = 'kpl';
 $_['month']          = 'kuukausi';
 $_['initial_fee']    = 'Perustamiskulu lisätään';
+
+// Tupas API
+$_['button_tupas']    = 'Authenticate on online bank';
+$_['tupas_error']     = 'Tampered parameters!!!';
+$_['response_60000']  = "Sinun täytyy tunnistautua ensin (yläpuolella olevasta napista)!";
 ?>

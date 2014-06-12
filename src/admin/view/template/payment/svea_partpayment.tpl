@@ -93,6 +93,35 @@
                     <?php } ?>
                 </td>
             </tr>
+            <tr>
+                <td><?php echo $entry_use_tupas; ?></td>
+                <td>
+                    <?php if ($svea_partpay_use_tupas) { ?>
+                    <input type="radio" name="svea_partpay_use_tupas" value="1" checked="checked" />
+                    <?php echo $entry_yes; ?>
+                    <input type="radio" name="svea_partpay_use_tupas" value="0" />
+                    <?php echo $entry_no; ?>
+                    <?php } else { ?>
+                    <input type="radio" name="svea_partpay_use_tupas" value="1" />
+                    <?php echo $entry_yes; ?>
+                    <input type="radio" name="svea_partpay_use_tupas" value="0" checked="checked" />
+                    <?php echo $entry_no; ?>
+                    <?php } ?>
+                </td>                                
+            </tr>
+            <tr>
+                <td><?php echo $entry_tupas_mode; ?></td>
+                <td>
+                    <select name="svea_partpay_tupas_mode">
+                        <option value="test"<?php if($svea_partpay_tupas_mode == 'test'){ echo ' selected="selected"';}?>><?php echo $entry_tupas_test; ?></option>
+                        <option value="production"<?php if($svea_partpay_tupas_mode == 'production'){ echo ' selected="selected"';}?>><?php echo $entry_tupas_production; ?></option>
+                    </select>
+                </td>                                
+            </tr>
+            <tr>
+                <td><?php echo $entry_tupas_shop_token; ?></td>
+                <td><input name="svea_partpay_tupas_shop_token" type="text" value="<?php echo $svea_partpay_tupas_shop_token; ?>" /></td>
+            </tr>   
           </tbody>
       </table>
          <!-- Countrycode specific -->

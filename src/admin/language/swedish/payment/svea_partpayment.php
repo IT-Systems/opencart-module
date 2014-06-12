@@ -33,4 +33,11 @@ $_['entry_product'] = 'Produktsida:';
 
 // Error
 $_['error_permission']   = 'Varning: Du har inte tillåtelse att modifiera Svea Delbetalning betalmodul!';
+
+// Tupas API mod
+$_['entry_use_tupas']         = 'Use Tupas authentication:';
+$_['entry_tupas_mode']        = 'Tupas mode:';
+$_['entry_tupas_shop_token']  = 'Tupas API Shop token:';
+$_['entry_tupas_test']        = 'test';
+$_['entry_tupas_production']  = 'production';
 ?>

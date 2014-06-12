@@ -45,4 +45,9 @@ $_['response_error'] = 'Fejl: ';
 $_['unit']           = 'st';
 $_['month']          = 'måned';
 $_['initial_fee']    = 'Indledende gebyr vil blive tilføjet.';
+
+// Tupas API
+$_['button_tupas']    = 'Authenticate on online bank';
+$_['tupas_error']     = 'Tampered parameters!!!';
+$_['response_60000'] = "You have to authenticate yourself first (using the button above)!";
 ?>

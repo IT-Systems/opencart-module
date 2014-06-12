@@ -44,4 +44,9 @@ $_['response_error'] = "Foutmelding: ";
 $_['unit']           = 'st';
 $_['month']          = 'maand';
 $_['initial_fee']    = 'De initiële kosten zullen worden toegevoegd';
+
+// Tupas API
+$_['button_tupas']    = 'Authenticate on online bank';
+$_['tupas_error']     = 'Tampered parameters!!!';
+$_['response_60000'] = "You have to authenticate yourself first (using the button above)!";
 ?>

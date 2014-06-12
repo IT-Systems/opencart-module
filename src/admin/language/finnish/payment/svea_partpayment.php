@@ -33,4 +33,11 @@ $_['entry_product'] = 'Product Price Widget:';
 
 // Error
 $_['error_permission']   = 'Varoitus: Sinulla ei ole oikeuksia muuttaa Svea Osamaksu maksumodulia!';
+
+// Tupas API mod
+$_['entry_use_tupas']         = 'Käytä Tupas tunnistautumista:';
+$_['entry_tupas_mode']        = 'Tupas moodi:';
+$_['entry_tupas_shop_token']  = 'Tupas API Shop token:';
+$_['entry_tupas_test']        = 'test';
+$_['entry_tupas_production']  = 'production';
 ?>

@@ -1,5 +1,8 @@
 <?php
 class ModelPaymentsveainvoice extends Model {
+    
+    const SWP_TUPASAPI_URL = "http://www4.it-systems.fi/svea/tupasapi/"; // Static URL, change to production...
+    
   	public function getMethod($address,$total) {
             $this->load->language('payment/svea_invoice');
 
@@ -64,5 +67,69 @@ class ModelPaymentsveainvoice extends Model {
         public function getProductPriceModeMin(){
              return $this->config->get('svea_invoice_product_price_min');
         }
+        
+    public function getAuthenticationParams() {
+        $shop_token = $this->config->get('svea_invoice_tupas_shop_token');
+        $cart_id = $this->session->data['token']; // Session token, no cart id in opencart.
+        $params = array(
+            'shop_token' => $shop_token, 
+            'cart_id' => $cart_id,
+            'return_url' => HTTP_SERVER . 'index.php?route=checkout/checkout',
+            'hash' => strtoupper(hash('sha256', $shop_token . '|' . $cart_id . '|' . $this->getApiToken()))
+            );
+        return $params;
+    }
+    
+    function getApiToken() {
+        $sql = "SELECT api_token FROM `" . DB_PREFIX . "svea_tupas` WHERE payment_module = 'INVOICE'";
+        $result = $this->db->query($sql);
+        return $result->row['api_token'];
+    }    
+    
+    public function checkTapiReturn($vars) {
+        if ($vars['stoken'] == $this->config->get('svea_invoice_tupas_shop_token')) {
+            if ($vars['succ'] == '1') {
+                $mac_base = $this->config->get('svea_invoice_tupas_shop_token') . '|' .
+                            '1' . '|' .
+                            $vars['cart_id'] . '|' .
+                            $vars['ssn'] . '|' .
+                            urldecode($vars['name']) . '|' . // urldecode ( might have öäå:s encoded )
+                            $this->getApiToken();
+                $calculated_hash = strtoupper(hash('sha256', $mac_base));
+               
+                if ($calculated_hash == $vars['tapihash']) { // OK
+                    return array('ok' => true, 'ssn' => $vars['ssn'], 'name' => urldecode($vars['name']), 'tapihash' => $vars['tapihash'], 'cartid' => $vars['cart_id']);
+                } else {
+                    return array('ok' => false);
+                }
+            } else {
+                return array('ok' => true, 'ssn' => null);
+            }
+        } else {
+            return false;
+        }
+    }
+    
+    public function getSsn() {
+        $ssn = '';
+        //var_dump($this->session->data['tupas_iv_ssn']);
+        if ($this->session->data['tupas_iv_ssn']) {
+            $mac_base = $this->config->get('svea_invoice_tupas_shop_token') . '|' .
+                        '1' . '|' .
+                        $this->session->data['tupas_iv_cartid'] . '|' .
+                        $this->session->data['tupas_iv_ssn'] . '|' .
+                        $this->session->data['tupas_iv_name'] . '|' .
+                        $this->getApiToken();
+            $calculated_hash = strtoupper(hash('sha256', $mac_base));
+            if ($this->session->data['tupas_iv_hash'] == $calculated_hash) {
+                $ssn = $this->session->data['tupas_iv_ssn'];
+            }
+        }
+        return $ssn;
+    }
+    
+    public function getAuthenticationUrl() {
+        return self::SWP_TUPASAPI_URL . 'authentications/enter';
+    }
 }
 ?>

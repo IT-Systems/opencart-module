@@ -28,6 +28,13 @@ $_['entry_distribution_type'] = 'Distributionsform för faktura (Enligt överens
 $_['entry_post'] = 'Post';
 $_['entry_email'] = 'Email';
 
+// Tupas API mod
+$_['entry_use_tupas']         = 'Use Tupas authentication:';
+$_['entry_tupas_mode']        = 'Tupas mode:';
+$_['entry_tupas_shop_token']  = 'Tupas API Shop token:';
+$_['entry_tupas_test']        = 'test';
+$_['entry_tupas_production']  = 'production';
+
 // Error
 $_['error_permission']   = 'Varning: Du har inte tillåtelse att modifiera Svea Faktura betalmodul!';
 ?>

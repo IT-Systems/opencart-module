@@ -32,6 +32,13 @@ $_['text_svea_invoice']       = '<img src="view/image/payment/dutch/svea_invoice
 	$_['entry_product_text'] ='Laagst te betalen bedrag. Toon van product';
 	$_['entry_product'] = 'Product Price Widget:';
 
+// Tupas API mod
+$_['entry_use_tupas']         = 'Use Tupas authentication:';
+$_['entry_tupas_mode']        = 'Tupas mode:';
+$_['entry_tupas_shop_token']  = 'Tupas API Shop token:';
+$_['entry_tupas_test']        = 'test';
+$_['entry_tupas_production']  = 'production';
+    
 // Error
 $_['error_permission']        = 'Waarschuwing: U heeft geen toestemming om de module Svea Factuur te wijzigen!';
 ?>

@@ -21,6 +21,33 @@ class ControllerPaymentsveapartpayment extends Controller {
         // populate data array for use in template
         $this->load->language('payment/svea_partpayment');
         $this->load->model('checkout/order');
+        // Tupas API mod [BEGINS] ...
+        // OpenCart does something to get parameters, so we have to catch those from server variables
+        $sref = $this->request->server['HTTP_REFERER'];
+        
+        if (strstr($sref, 'ssn') !== false && strstr($sref, 'stoken') !== false && strstr($sref, 'tapihash') !== false) {
+            $delim = (strstr($sref, "&amp;")) ? '&amp;' : '&';
+            $tapivars = array();
+            list($tapivars['ditch'], $tapivars['succ'], $tapivars['ssn'], $tapivars['name'], $tapivars['cart_id'], $tapivars['stoken'], $tapivars['tapihash']) = explode($delim, $sref);
+            foreach ($tapivars as $key => $val) :
+                list($tapivars['ditch'], $tapivars[$key]) = explode("=", $val);
+            endforeach;
+            unset($tapivars['ditch']);
+            $return = $this->checkTapiReturn($tapivars);
+            if ($return) {
+                if ($return['ok'] === true && $return['ssn']) { // If everything is fine, store variables into session
+                    $this->session->data['tupas_pp_cartid'] = $return['cartid'];
+                    $this->session->data['tupas_pp_ssn'] = $return['ssn'];
+                    $this->session->data['tupas_pp_name'] = $return['name'];
+                    $this->session->data['tupas_pp_hash'] = $return['tapihash'];
+                    // ... and reload page (by js) setting url first... this can't apparently be done without extensions... oh well leave the get params there
+                    //$this->data['TupasRedirect'] = $this->url->link(('checkout/checkout'), '', 'SSL');
+                } elseif ($return['ok'] === false) { // Tampered get params
+                    die($this->language->get('tupas_error')); // @todo, better error reporting?
+                }
+            }
+        }
+        // ... [ENDS]
         $this->data['button_confirm'] = $this->language->get('button_confirm');
         $this->data['button_back'] = $this->language->get('button_back');
 
@@ -33,11 +60,24 @@ class ControllerPaymentsveapartpayment extends Controller {
         }
 
         $this->id = 'payment';
-
+        
         //Get the country from the order
         $order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
         $this->data['countryCode'] = $order_info['payment_iso_code_2'];
-
+        
+        // Tupas mod ... [BEGINS]
+        $this->data['useTupas'] = ($this->data['countryCode'] == 'FI' && $this->config->get('svea_partpay_use_tupas')) ? true : false;
+        if ($this->data['useTupas'] && ((isset($this->session->data['tupas_pp_ssn']) && $this->session->data['tupas_pp_ssn'] == null) || (!isset($this->session->data['tupas_pp_ssn'])))) {
+            $this->session->data['tupas_pp_ssn'] = $this->session->data['tupas_pp_name'] = $this->session->data['tupas_pp_hash'] = null;
+            $this->data['tupasParams'] = $this->getTupasParams();
+            $this->data['tupas_button_text'] = $this->language->get('button_tupas');            
+            $this->data['tupas_api_url'] = $this->model_payment_svea_partpayment->getAuthenticationUrl();
+            $this->data['tupas_ssn'] = '';
+        } elseif ($this->data['useTupas']) {
+            $this->data['tupas_ssn'] = $this->getSsn();
+        }
+        // ... [ENDS]
+        
         $this->data['logo'] = "<img src='admin/view/image/payment/" . $this->getLogo($order_info['payment_iso_code_2']) . "/svea_partpayment.png'>";
 
         // we show the available payment plans w/monthly amounts as radiobuttons under the logo
@@ -82,6 +122,18 @@ class ControllerPaymentsveapartpayment extends Controller {
         //Get order information
         $order = $this->model_checkout_order->getOrder($this->session->data['order_id']);
         $countryCode = $order['payment_iso_code_2'];
+        
+        // TUPAS MOD [Begins] : make sure the ssn is the same that tupas api returned
+        $this->data['useTupas'] = ($countryCode == 'FI' && $this->config->get('svea_partpay_use_tupas')) ? true : false;
+        if ($this->data['useTupas']) {
+            if ($this->getSsn() != $_GET['ssn'] || empty($this->getSsn())) {
+                $response = array("error" => $this->responseCodes(60000, $this->language->get('response_60000')));
+                echo json_encode($response);
+                exit();
+            }
+        }
+        // Ends
+        
         //Testmode
         if ($this->config->get('svea_partpayment_testmode_' . $countryCode) !== NULL) {
             $conf = $this->config->get('svea_partpayment_testmode_' . $countryCode) == "1" ? new OpencartSveaConfigTest($this->config) : new OpencartSveaConfig($this->config);
@@ -541,6 +593,22 @@ class ControllerPaymentsveapartpayment extends Controller {
         }
         return array_keys($taxRates);   //we want the keys
     }
+    
+    public function getTupasParams() {
+		$this->load->model('payment/svea_partpayment');   
+        return $this->model_payment_svea_partpayment->getAuthenticationParams(); 
+    }
+    
+    public function checkTapiReturn($vars) {
+        $this->load->model('payment/svea_partpayment');
+        return $this->model_payment_svea_partpayment->checkTapiReturn($vars);
+    }
+    
+    public function getSsn() {
+        $this->load->model('payment/svea_partpayment');
+        return $this->model_payment_svea_partpayment->getSsn();
+    }
+    
 
 }
 

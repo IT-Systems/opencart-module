@@ -31,6 +31,13 @@ $_['entry_email'] = 'Email';
 	$_['entry_product_text'] = 'Minstebeløp å betale. Vis på produktsiden';
 	$_['entry_product'] = 'Product Price Widget:';
 
+// Tupas API mod
+$_['entry_use_tupas']         = 'Use Tupas authentication:';
+$_['entry_tupas_mode']        = 'Tupas mode:';
+$_['entry_tupas_shop_token']  = 'Tupas API Shop token:';
+$_['entry_tupas_test']        = 'test';
+$_['entry_tupas_production']  = 'production';
+    
 // Error
 $_['error_permission']   = 'Advarsel: Du har ikke tillatelse til å modifisere Svea Faktura betalingsmodul!';
 ?>

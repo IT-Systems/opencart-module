@@ -1,6 +1,7 @@
 <?php
 class ControllerPaymentsveainvoice extends Controller {
 	private $error = array();
+    
 	 //
 	public function index() {
 		$this->load->language('payment/svea_invoice');
@@ -8,11 +9,14 @@ class ControllerPaymentsveainvoice extends Controller {
 		$this->document->setTitle($this->language->get('heading_title'));
 
 		$this->load->model('setting/setting');
-
+        
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && ($this->validate())) {
 			$this->model_setting_setting->editSetting('svea_invoice', $this->request->post);
-
-			$this->session->data['success'] = $this->language->get('text_success');
+            // Tupas API mod ... [BEGINS] //
+            if ($this->tupasSettingsChanged())
+                $this->editShopInstance();
+            // ... [ENDS]        
+            $this->session->data['success'] = $this->language->get('text_success');
 
 			$this->redirect(HTTPS_SERVER . 'index.php?route=extension/payment&token=' . $this->session->data['token']);
 		}
@@ -53,7 +57,13 @@ class ControllerPaymentsveainvoice extends Controller {
         $this->data['entry_yes']            = $this->language->get('entry_yes');
         $this->data['entry_no']             = $this->language->get('entry_no');
         $this->data['entry_min_amount']    = $this->language->get('entry_min_amount');
-
+        // Tupas API mod... [BEGINS] 
+        $this->data['entry_use_tupas']      = $this->language->get('entry_use_tupas');
+        $this->data['entry_tupas_mode']     = $this->language->get('entry_tupas_mode');
+        $this->data['entry_tupas_shop_token']   = $this->language->get('entry_tupas_shop_token');        
+        $this->data['entry_tupas_test']   = $this->language->get('entry_tupas_test');   
+        $this->data['entry_tupas_production']   = $this->language->get('entry_tupas_production');   
+        // ... [ENDS]
         $this->data['version']  = floatval(VERSION);
 
         $cred = array();
@@ -177,6 +187,26 @@ class ControllerPaymentsveainvoice extends Controller {
 		} else {
 			$this->data['svea_invoice_distribution_type'] = $this->config->get('svea_invoice_distribution_type');
 		}
+        
+        // Tupas mod... //
+        if (isset($this->request->post['svea_invoice_use_tupas'])) {
+	       $this->data['svea_invoice_use_tupas'] = $this->request->post['svea_invoice_use_tupas'];
+		} else {
+			$this->data['svea_invoice_use_tupas'] = $this->config->get('svea_invoice_use_tupas');
+		}
+        
+        if (isset($this->request->post['svea_invoice_tupas_mode'])) {
+	       $this->data['svea_invoice_tupas_mode'] = $this->request->post['svea_invoice_tupas_mode'];
+		} else {
+			$this->data['svea_invoice_tupas_mode'] = $this->config->get('svea_invoice_tupas_mode');
+		}
+        
+        if (isset($this->request->post['svea_invoice_tupas_shop_token'])) {
+	       $this->data['svea_invoice_tupas_shop_token'] = $this->request->post['svea_invoice_tupas_shop_token'];
+		} else {
+			$this->data['svea_invoice_tupas_shop_token'] = $this->config->get('svea_invoice_tupas_shop_token');
+		}
+        // .. ends  //
 
 		$this->template = 'payment/svea_invoice.tpl';
 		$this->children = array(
@@ -199,6 +229,29 @@ class ControllerPaymentsveainvoice extends Controller {
 			return FALSE;
 		}
 	}
-
+    
+    /* Tupas API -modification */
+    public function install() {
+		$this->load->model('payment/svea_invoice');
+		$this->load->model('setting/setting');
+		$this->model_payment_svea_invoice->install();
+    }
+    
+    public function uninstall() {
+		$this->load->model('payment/svea_invoice');
+		$this->load->model('setting/setting');
+		$this->model_payment_svea_invoice->uninstall();
+    }
+    
+    public function tupasSettingsChanged() {
+        $this->load->model('payment/svea_invoice');   
+        return $this->model_payment_svea_invoice->tupasSettingsChanged(); 
+    }
+    
+    public function editShopInstance() {
+		$this->load->model('payment/svea_invoice');   
+        $this->model_payment_svea_invoice->editShopInstance();     
+    }
+   
 }
 ?>

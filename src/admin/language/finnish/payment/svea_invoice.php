@@ -31,6 +31,13 @@ $_['entry_email'] = 'Sähköposti';
 $_['entry_product_text'] = 'Vähimmäismäärästä maksamaan. Näytä yhdessä tuote.';
 $_['entry_product'] = 'Product Price Widget:';
 
+// Tupas API mod
+$_['entry_use_tupas']         = 'Käytä Tupas tunnistautumista:';
+$_['entry_tupas_mode']        = 'Tupas moodi:';
+$_['entry_tupas_shop_token']  = 'Tupas API Shop token:';
+$_['entry_tupas_test']        = 'test';
+$_['entry_tupas_production']  = 'production';
+
 // Error
 $_['error_permission']        = 'Varoitus: Sinulla ei ole oikeuksia muuttaa Svea Lasku maksumodulia!';
 ?>

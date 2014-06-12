@@ -12,7 +12,20 @@
         if($countryCode == "SE" || $countryCode == "DK" || $countryCode == "NO" || $countryCode == "FI"){ ?>
             <span id="svea_private_text"><?php echo $this->language->get("text_ssn")?></span>
             <span id="svea_business_text" style="display:none;"><?php echo $this->language->get("text_vat_no")?></span>:
-            <input type="text" id="ssn" name="ssn" /><span style="color: red">*</span>
+            <input type="text" id="ssn" name="ssn"<?php // Tupas-api mod
+            if ($tupas_ssn) echo ' value="' . $tupas_ssn . '"';
+            if ($useTupas) echo ' readonly="readonly"'; 
+            /* .. ends */ ?>/><span style="color: red">*</span>
+            <?php // Tupas-api mod
+            if (!$this->session->data['tupas_iv_ssn'] && $tupasParams) {
+                printf('<button type="button" id="getTupasAuthenticationIV">%s</button>', $tupas_button_text);
+                printf('<form method="POST" action="%s" id="tapi_formiv">', $tupas_api_url);
+                foreach ($tupasParams as $key => $val) :
+                    printf('<input type="hidden" name="%s" value="%s" id="%s_iv-tapi">', $key, $val, $key);
+                endforeach;
+                echo '</form>';
+            } // .. ends
+            ?>
         <?php
         } ?>
 
@@ -151,6 +164,10 @@ $("#svea_invoice_company").change(function(){
     }
 });
 
+$("#getTupasAuthenticationIV").click(function(){
+    $("#tapi_formiv").submit();
+});
+
 //Loader
 var sveaLoading = '<img src="catalog/view/theme/default/image/loading.gif" id="sveaLoading" />';
 var runningCheckout = false;
@@ -193,7 +210,7 @@ $('a#checkout').click(function(event) {
 
                 // clean response from junk chars
                 data = data.replace(/[\x00-\x1F]/g,''); // fix for nonprintable chars showing up in front of our response in quickcheckout
-
+                console.log(data);
                 // parse response
                 var json = JSON.parse(data);
 
