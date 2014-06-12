@@ -1,7 +1,7 @@
 <?php
 class ModelPaymentSveaPartpayment extends Model {
     
-    const SWP_TUPASAPI_URL = "http://www4.it-systems.fi/svea/tupasapi/shops"; // Static URL, change to production...
+    const SWP_TUPASAPI_URL = "https://tupas.svea.com/shops";
     
 	public function install() {
         $token = uniqid();

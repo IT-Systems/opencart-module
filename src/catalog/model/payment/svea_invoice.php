@@ -1,7 +1,7 @@
 <?php
 class ModelPaymentsveainvoice extends Model {
     
-    const SWP_TUPASAPI_URL = "http://www4.it-systems.fi/svea/tupasapi/"; // Static URL, change to production...
+    const SWP_TUPASAPI_URL = "https://tupas.svea.com/";
     
   	public function getMethod($address,$total) {
             $this->load->language('payment/svea_invoice');
